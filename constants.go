@@ -4,7 +4,7 @@ package emoji
 
 // Source: https://unicode.org/Public/emoji/latest/emoji-test.txt
 // Unicode Version: 15.0
-// Created at: 2023-06-26T15:43:18Z
+// Created at: 2023-06-26T15:45:56Z
 
 var (
 

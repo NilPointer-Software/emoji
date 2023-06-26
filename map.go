@@ -4,7 +4,7 @@ package emoji
 
 // Source: https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json
 // From commit: ee6e06c648e85d601756b573d356327d4e51031d
-// Created at: 2023-06-26T15:43:18Z
+// Created at: 2023-06-26T15:45:56Z
 
 var emojiMap = map[string]string{
 	":+1:":                               "\U0001f44d",
