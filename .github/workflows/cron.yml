@@ -1,0 +1,34 @@
+name: Auto Update
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  auto-update:
+    name: Regenerate constants and map
+    runs-on: ubuntu-latest
+    env:
+      CANCEL: false
+    steps:
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.13'
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Generate
+        run: go run ./internal/generator
+      - name: Try push update
+        run: |
+          git config user.name "Github Actions"
+          git config user.email ""
+          git add . 
+          git commit -m "Emoji auto update" && git push origin master
+          [ $? -ne 0] && echo "CANCEL=true" >> $GITHUB_ENV
+      - name: Notify
+        if: ${{ env.CANCEL == false }}
+        uses: MineBartekSA/discord-webhook@v2.1
+        with:
+          webhook: ${{ secrets.WEBHOOK_URL }}
+          content: NilPointer-Software/emoji new update

@@ -25,12 +25,12 @@ var customEmojis = map[string]string{
 }
 
 func main() {
-	emojis, err := fetchEmojis()
+	emojis, unicodeVersion, err := fetchEmojis()
 	if err != nil {
 		panic(err)
 	}
 
-	gemojis, err := fetchGemojis()
+	gemojis, gemojiCommit, err := fetchGemojis()
 	if err != nil {
 		panic(err)
 	}
@@ -38,11 +38,11 @@ func main() {
 	constants := generateConstants(emojis)
 	aliases := generateAliases(emojis, gemojis)
 
-	if err = save(constantsFile, emojiListURL, constants); err != nil {
+	if err = save(constantsFile, emojiListURL, constants, unicodeVersion); err != nil {
 		panic(err)
 	}
 
-	if err = save(aliasesFile, gemojiURL, aliases); err != nil {
+	if err = save(aliasesFile, gemojiURL, aliases, gemojiCommit); err != nil {
 		panic(err)
 	}
 }
@@ -78,7 +78,7 @@ func emojiConstant(emojis []emoji) string {
 
 		return fmt.Sprintf("%s EmojiWithTone = newEmojiWithTone(%+q) // %s\n",
 			basic.Constant, oneTonedCode, basic.Name)
-	case 26:
+	case 20, 26:
 		oneTonedCode := replaceTones(emojis[1].Code)
 		twoTonedCode := replaceTones(emojis[2].Code)
 
@@ -134,20 +134,23 @@ func generateAliases(emojis *groups, gemojis map[string]string) string {
 
 	return r
 }
-func save(filename, url, data string) error {
+
+func save(filename, url, data, version string) error {
 	tmpl, err := template.ParseFiles(fmt.Sprintf("internal/generator/%v.tmpl", filename))
 	if err != nil {
 		return err
 	}
 
 	d := struct {
-		Link string
-		Date string
-		Data string
+		Link    string
+		Date    string
+		Version string
+		Data    string
 	}{
-		Link: url,
-		Date: time.Now().Format(time.RFC3339),
-		Data: data,
+		Link:    url,
+		Date:    time.Now().Format(time.RFC3339),
+		Version: version,
+		Data:    data,
 	}
 
 	var w bytes.Buffer

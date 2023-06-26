@@ -9,25 +9,28 @@ import (
 	emojipkg "github.com/enescakir/emoji"
 )
 
-const emojiListURL = "https://unicode.org/Public/emoji/13.0/emoji-test.txt"
+const emojiListURL = "https://unicode.org/Public/emoji/latest/emoji-test.txt"
 
 var (
 	emojiRegex = regexp.MustCompile(`^(?m)(?P<code>[A-Z\d ]+[A-Z\d])\s+;\s+(fully-qualified|component)\s+#\s+.+\s+E\d+\.\d+ (?P<name>.+)$`)
 	toneRegex  = regexp.MustCompile(`:\s.*tone,?`)
 )
 
-func fetchEmojis() (*groups, error) {
+func fetchEmojis() (*groups, string, error) {
 	var emojis groups
 	b, err := fetchData(emojiListURL)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var grp *group
 	var subgrp *subgroup
+	var version string
 
 	parseLine := func(line string) {
 		switch {
+		case strings.HasPrefix(line, "# Version:"):
+			version = strings.TrimSpace(line[11:])
 		case strings.HasPrefix(line, "# group:"):
 			name := strings.TrimSpace(strings.ReplaceAll(line, "# group:", ""))
 			grp = emojis.Append(name)
@@ -42,10 +45,10 @@ func fetchEmojis() (*groups, error) {
 	}
 
 	if err = readLines(b, parseLine); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return &emojis, nil
+	return &emojis, version, nil
 }
 
 type groups struct {
