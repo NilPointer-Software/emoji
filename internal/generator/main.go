@@ -11,7 +11,6 @@ import (
 	"os"
 	"sort"
 	"text/template"
-	"time"
 )
 
 const (
@@ -143,12 +142,10 @@ func save(filename, url, data, version string) error {
 
 	d := struct {
 		Link    string
-		Date    string
 		Version string
 		Data    string
 	}{
 		Link:    url,
-		Date:    time.Now().Format(time.RFC3339),
 		Version: version,
 		Data:    data,
 	}

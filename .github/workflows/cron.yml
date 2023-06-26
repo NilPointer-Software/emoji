@@ -25,8 +25,9 @@ jobs:
           git config user.name "Github Actions"
           git config user.email ""
           git add . 
-          git commit -m "Emoji auto update" && git push origin master
+          git commit -m "chore: emoji auto update" && git push origin master
           [ $? -ne 0 ] && echo "CANCEL=true" >> $GITHUB_ENV
+          exit 0
       - name: Notify
         if: ${{ env.CANCEL == false }}
         uses: MineBartekSA/discord-webhook@v2.1
