@@ -1,3 +1,3 @@
-module github.com/enescakir/emoji
+module github.com/NilPointer-Software/emoji
 
 go 1.13
